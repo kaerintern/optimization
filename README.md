@@ -12,6 +12,6 @@ uses [lift, ct_tot_kw, cooling_load, ch_1_kwe, ch_2_kwe] as its features.
 UI is currently developed using streamlit package.
 
 To run:
-'''
+```
     - streamlit run ui.py
-'''
+```
