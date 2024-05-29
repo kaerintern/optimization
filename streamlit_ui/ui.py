@@ -30,23 +30,26 @@ if 'counter' not in st.session_state:
     st.session_state['counter'] = 0
     
 color = ["red", "black", "red", "blue", "black", "black", "red", "blue", "green"]
-if st.button("Create") and st.session_state.counter <7:
-    try:
-        if lift not in st.session_state.lifts:
-            temp = []
-            for i in range(70, 161):
-                ct_tot_kw.append(i/10)
-                temp.append(np.round(model.predict([[lift, cooling_load, (i/10)]]),3))
-            st.session_state.ch_sysef_per_lift[lift] = temp
-            st.session_state.lifts.append(lift)
-    except IndexError:
-        print('error')
-        st.session_state.counter = 0
 
-if st.button("Reset"):
-    st.session_state['ch_sysef_per_lift'] = {}
-    st.session_state['lifts'] = []
-    st.session_state['counter'] = 0
+c1, c2, c3, c4, c5, c6 = st.columns(6)
+with c1:
+    if st.button("Create") and st.session_state.counter <9:
+        try:
+            if lift not in st.session_state.lifts:
+                temp = []
+                for i in range(40, 161):
+                    ct_tot_kw.append(i/10)
+                    temp.append(np.round(model.predict([[lift, cooling_load, (i/10)]]),3))
+                st.session_state.ch_sysef_per_lift[lift] = temp
+                st.session_state.lifts.append(lift)
+        except IndexError:
+            st.write('System Error')
+            st.session_state.counter = 0
+with c6:
+    if st.button("Reset") and cooling_load:
+        st.session_state['ch_sysef_per_lift'] = {}
+        st.session_state['lifts'] = []
+        st.session_state['counter'] = 0
 
 def plot(p, ct_tot_kw, sysef, lift, color, line_width=2):
     p.line(ct_tot_kw, sysef, legend_label=str(lift),color=color, line_width=line_width)
@@ -57,13 +60,15 @@ for sysef in st.session_state.ch_sysef_per_lift.values():
         plot(p=p, ct_tot_kw=ct_tot_kw, sysef=sysef, color=color[st.session_state.counter], lift=lift)
         st.session_state.counter+=1
     except IndexError:
-        print('s')
-        st.error('error')
-        st.rerun()
-print(st.session_state.counter)
+        st.session_state['ch_sysef_per_lift'] = {}
+        st.session_state['lifts'] = []
+        st.session_state['counter'] = -2
+
 st.bokeh_chart(p, use_container_width=True)
+# giving comment of the plot
+color_comment = ['red', 'blue', 'green']
 
-## pseudoi
-'''
-
-'''
+comment = ''
+for i in range(len(st.session_state.lifts)):
+    comment += "The {} colored plot has a lift of {} \n".format(color_comment[i], st.session_state.lifts[i])
+st.write(comment)
