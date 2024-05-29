@@ -2,13 +2,16 @@ import pickle
 
 from bokeh.plotting import figure
 import numpy as np
-import pandas as pd
 import streamlit as st
+
+
+color = ["red", "red", "blue", "red", "blue", "green"]
+model = pickle.load(open('/Users/admin/Desktop/optimization/parklane/RF_first.sav', 'rb'))
 
 cooling_load = st.slider("Cooling Load", min_value=300, max_value=450)
 lift = st.slider("Lift", min_value=22.0, max_value=26.0, step=0.1)
-
-model = pickle.load(open('/Users/admin/Desktop/optimization/parklane/RF_first.sav', 'rb'))
+create = st.button("Create")
+reset = st.button("Reset")
 
 p = figure(
     title='line',
@@ -18,7 +21,8 @@ p = figure(
 p.plot_height=400
 p.plot_width=1000
 
-ct_tot_kw = []
+def plot(p, ct_tot_kw, sysef, lift, color, line_width=2):
+    p.line(ct_tot_kw, sysef, legend_label=str(lift),color=color, line_width=line_width)
 
 if 'ch_sysef_per_lift' not in st.session_state:
     st.session_state['ch_sysef_per_lift'] = {}
@@ -29,9 +33,7 @@ if 'lifts' not in st.session_state:
 if 'counter' not in st.session_state:
     st.session_state['counter'] = 0
     
-color = ["red", "red", "blue", "red", "blue", "green"]
-create = st.button("Create")
-reset = st.button("Reset")
+ct_tot_kw = []
 c1, c2, c3, c4, c5, c6 = st.columns(6)
 with c1:
     if create and st.session_state.counter <9:
@@ -52,9 +54,6 @@ with c6:
         st.session_state['lifts'] = []
         st.session_state['counter'] = 0
 
-def plot(p, ct_tot_kw, sysef, lift, color, line_width=2):
-    p.line(ct_tot_kw, sysef, legend_label=str(lift),color=color, line_width=line_width)
-
 if create:
     for sysef in st.session_state.ch_sysef_per_lift.values():
         try:
@@ -66,9 +65,9 @@ if create:
             st.session_state['counter'] = -2
 
 st.bokeh_chart(p, use_container_width=True)
-# giving comment of the plot
-color_comment = ['red', 'blue', 'green']
 
+# Comment After
+color_comment = ['red', 'blue', 'green']
 comment = ''
 for i in range(len(st.session_state.lifts)):
     comment += "The {} colored plot has a lift of {} \n".format(color_comment[i], st.session_state.lifts[i])
