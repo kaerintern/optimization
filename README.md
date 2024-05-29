@@ -13,5 +13,5 @@ UI is currently developed using streamlit package.
 
 To run:
 ```
-    - streamlit run ui.py
+    % treamlit run ui.py
 ```
