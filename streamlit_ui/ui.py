@@ -58,7 +58,7 @@ with c1:
         st.write('Error')
         reset()
 with c6:
-    if reset_button and cooling_load:
+    if reset_button:
         reset()
 
 if create:
