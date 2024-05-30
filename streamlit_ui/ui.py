@@ -11,7 +11,7 @@ model = pickle.load(open('/Users/admin/Desktop/optimization/parklane/RF_first.sa
 cooling_load = st.slider("Cooling Load", min_value=300, max_value=450)
 lift = st.slider("Lift", min_value=22.0, max_value=26.0, step=0.1)
 create = st.button("Create")
-reset = st.button("Reset")
+reset_button = st.button("Reset")
 
 p = figure(
     title='line',
@@ -24,20 +24,26 @@ p.plot_width=1000
 def plot(p, ct_tot_kw, sysef, lift, color, line_width=2):
     p.line(ct_tot_kw, sysef, legend_label=str(lift),color=color, line_width=line_width)
 
+def reset():
+    st.session_state['ch_sysef_per_lift'] = {}
+    st.session_state['counter'] = 0
+    st.session_state['lifts'] = []
+
 if 'ch_sysef_per_lift' not in st.session_state:
     st.session_state['ch_sysef_per_lift'] = {}
 
-if 'lifts' not in st.session_state:
-    st.session_state['lifts'] = []
-
 if 'counter' not in st.session_state:
     st.session_state['counter'] = 0
+
+if 'lifts' not in st.session_state:
+    st.session_state['lifts'] = []
     
 ct_tot_kw = []
 c1, c2, c3, c4, c5, c6 = st.columns(6)
 with c1:
     if create and st.session_state.counter <9:
         try:
+            # check if the input lift has already been calculated
             if lift not in st.session_state.lifts:
                 temp = []
                 for i in range(40, 161):
@@ -48,11 +54,12 @@ with c1:
         except IndexError:
             st.write('System Error')
             st.session_state.counter = 0
+    elif create and st.session_state.counter >=10:
+        st.write('Error')
+        reset()
 with c6:
-    if reset and cooling_load:
-        st.session_state['ch_sysef_per_lift'] = {}
-        st.session_state['lifts'] = []
-        st.session_state['counter'] = 0
+    if reset_button:
+        reset()
 
 if create:
     for sysef in st.session_state.ch_sysef_per_lift.values():
@@ -60,9 +67,8 @@ if create:
             plot(p=p, ct_tot_kw=ct_tot_kw, sysef=sysef, color=color[st.session_state.counter], lift=lift)
             st.session_state.counter+=1
         except IndexError:
-            st.session_state['ch_sysef_per_lift'] = {}
-            st.session_state['lifts'] = []
-            st.session_state['counter'] = -2
+            st.write('Error')
+            reset()
 
 st.bokeh_chart(p, use_container_width=True)
 
@@ -70,5 +76,5 @@ st.bokeh_chart(p, use_container_width=True)
 color_comment = ['red', 'blue', 'green']
 comment = ''
 for i in range(len(st.session_state.lifts)):
-    comment += "The {} colored plot has a lift of {} \n".format(color_comment[i], st.session_state.lifts[i])
+    comment += "The {} colored plot has a lift of {} ".format(color_comment[i], st.session_state.lifts[i]) + "  \n"
 st.write(comment)
