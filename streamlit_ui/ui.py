@@ -7,7 +7,7 @@ import streamlit as st
 
 color = ["red", "red", "blue", "red", "blue", "green"]
 model = pickle.load(open('/Users/admin/Desktop/optimization/parklane/RF_first.sav', 'rb'))
-
+print('Hello ben')
 cooling_load = st.slider("Cooling Load", min_value=300, max_value=450)
 lift = st.slider("Lift", min_value=22.0, max_value=26.0, step=0.1)
 create = st.button("Create")
