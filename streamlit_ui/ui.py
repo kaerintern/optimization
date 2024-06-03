@@ -7,11 +7,9 @@ import streamlit as st
 
 color = ["red", "red", "blue", "red", "blue", "green"]
 model = pickle.load(open('/Users/admin/Desktop/optimization/parklane/RF_first.sav', 'rb'))
-
+second_model = pickle.load(open('Users/admin/Desktop/optimization/parklane/RF_first_both_ch.sav', 'rb'))
 cooling_load = st.slider("Cooling Load", min_value=300, max_value=450)
 lift = st.slider("Lift", min_value=22.0, max_value=26.0, step=0.1)
-chiller = st.slider("Chiller Power Input", min_value=50, max_value=125 )
-toggle = st.toggle("toggle for 2 chiller")
 create = st.button("Create")
 reset_button = st.button("Reset")
 
@@ -80,3 +78,5 @@ comment = ''
 for i in range(len(st.session_state.lifts)):
     comment += "The {} colored plot has a lift of {} ".format(color_comment[i], st.session_state.lifts[i]) + "  \n"
 st.write(comment)
+
+## create second graph that varies chiller power input
