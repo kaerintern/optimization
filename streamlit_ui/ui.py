@@ -10,6 +10,8 @@ model = pickle.load(open('/Users/admin/Desktop/optimization/parklane/RF_first.sa
 
 cooling_load = st.slider("Cooling Load", min_value=300, max_value=450)
 lift = st.slider("Lift", min_value=22.0, max_value=26.0, step=0.1)
+chiller = st.slider("Chiller Power Input", min_value=50, max_value=125 )
+toggle = st.toggle("toggle for 2 chiller")
 create = st.button("Create")
 reset_button = st.button("Reset")
 
