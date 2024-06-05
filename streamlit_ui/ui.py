@@ -1,13 +1,19 @@
+import os
 import pickle
 import warnings
-warnings.filterwarnings("ignore", category=DeprecationWarning)
 from bokeh.plotting import figure
 import numpy as np
 import streamlit as st
 
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
+relative_path = os.path.join(os.path.dirname(__file__), '..', 'parklane', 'RF_first_both_ch.sav')
+
+with open(relative_path, 'rb') as file:
+    model = pickle.load(file)
 
 graph_color = ["red", "red", "blue", "red", "blue", "green"]
-model = pickle.load(open('/Users/admin/Desktop/optimization/parklane/RF_first_both_ch.sav', 'rb'))
+
 
 cooling_load = st.slider("Cooling Load", min_value=300, max_value=450)
 lift = st.slider("Lift", min_value=18.0, max_value=30.0, step=0.1)
