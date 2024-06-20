@@ -35,7 +35,7 @@ def check_password():
 if not check_password():
     st.stop()  # Do not continue if check_password is not True.
 
-relative_path = os.path.join(os.path.dirname(__file__), '..', 'parklane', 'XGB_both_ch_smogn.sav')
+relative_path = os.path.join(os.path.dirname(__file__), '..', 'parklane', 'RF_both_ch_smogn.sav')
 
 with open(relative_path, 'rb') as file:
     model = pickle.load(file)
