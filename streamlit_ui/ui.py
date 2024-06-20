@@ -35,7 +35,7 @@ def check_password():
 if not check_password():
     st.stop()  # Do not continue if check_password is not True.
 
-relative_path = os.path.join(os.path.dirname(__file__), '..', 'parklane', 'RF_first_both_ch.sav')
+relative_path = os.path.join(os.path.dirname(__file__), '..', 'parklane', 'RF_both_ch_smogn.sav')
 
 with open(relative_path, 'rb') as file:
     model = pickle.load(file)
@@ -96,17 +96,17 @@ with c1:
         try:
             # check if the input lift has already been calculated
             if lift not in st.session_state.lifts:
-                temp_1 = []
-
+                
                 # 1 chiller
+                temp_1 = []
                 ch_run = 0
                 for i in range(20, 301):
                     ct_tot_kw.append(i/10)
                     temp_1.append(np.round(model.predict([[lift, cooling_load, (i/10), ch_run]]),3))
                 st.session_state.ch_sysef_1_ch[np.round(lift, 1)] = temp_1
 
-                temp_2 = []
                 # 2 chiller
+                temp_2 = []
                 ch_run = 1
                 for i in range(20, 301):
                     temp_2.append(np.round(model.predict([[lift, cooling_load, (i/10), ch_run]]), 3))
