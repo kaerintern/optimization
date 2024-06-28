@@ -9,21 +9,17 @@ import streamlit as st
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 def check_password():
-    """Returns `True` if the user had the correct password."""
 
     def password_entered():
-        """Checks whether a password entered by the user is correct."""
         if hmac.compare_digest(st.session_state["password"], st.secrets["password"]):
             st.session_state["password_correct"] = True
             del st.session_state["password"]  # Don't store the password.
         else:
             st.session_state["password_correct"] = False
 
-    # Return True if the password is validated.
     if st.session_state.get("password_correct", False):
         return True
 
-    # Show input for password.
     st.text_input(
         "Password", type="password", on_change=password_entered, key="password"
     )
@@ -31,11 +27,10 @@ def check_password():
         st.error("😕 Password incorrect")
     return False
 
-
 if not check_password():
     st.stop()  # Do not continue if check_password is not True.
 
-relative_path = os.path.join(os.path.dirname(__file__), '..', 'parklane', 'RF_first_both_ch.sav')
+relative_path = os.path.join(os.path.dirname(__file__), '..', 'parklane', 'currently_used', 'RF_h_cwst_ct_approach.sav')
 
 with open(relative_path, 'rb') as file:
     model = pickle.load(file)
@@ -45,6 +40,8 @@ graph_color = ["red", "red", "blue", "red", "blue", "green"]
 
 cooling_load = st.slider("Cooling Load", min_value=300, max_value=450)
 lift = st.slider("Lift", min_value=18.0, max_value=30.0, step=0.1)
+h_cwst = st.slider("CWST", min_value=28.0, max_value=32.0, step=0.1)
+ct_approach = st.slider("CT Approach", min_value=1.0, max_value=3.0, step=0.1)
 
 p1 = figure(
     title='Chiller System Efficiency vs Cooling Tower Power Input On 1 Chiller Configuration',
@@ -87,11 +84,14 @@ if 'counter_2' not in st.session_state:
 
 if 'lifts' not in st.session_state:
     st.session_state['lifts'] = []
-    
+
+
+
 ct_tot_kw = []
 c1, c2, c3, c4, c5, c6 = st.columns(6)
 with c1:
     create = st.button("Create")
+
     if create and st.session_state.counter_1 <9:
         try:
             # check if the input lift has already been calculated
@@ -102,14 +102,37 @@ with c1:
                 ch_run = 0
                 for i in range(20, 301):
                     ct_tot_kw.append(i/10)
-                    temp_1.append(np.round(model.predict([[lift, cooling_load, (i/10), ch_run]]),3))
+                    # cooling tower manipulation
+                    sysef = model.predict([[
+                        lift ** 3,
+                        cooling_load,
+                        (i/10) ** 1.5,
+                        ch_run, 
+                        h_cwst ** 2,
+                        ct_approach ** 1.5
+                    ]])
+                    # sysef manipulation
+                    sysef = np.log10(sysef) / 3
+                    temp_1.append(np.round(sysef, 3))
+            
                 st.session_state.ch_sysef_1_ch[np.round(lift, 1)] = temp_1
 
                 # 2 chiller
                 temp_2 = []
                 ch_run = 1
                 for i in range(20, 301):
-                    temp_2.append(np.round(model.predict([[lift, cooling_load, (i/10), ch_run]]), 3))
+                    sysef = model.predict([[
+                        lift ** 3,
+                        cooling_load,
+                        (i/10) ** 1.5,
+                        ch_run, 
+                        h_cwst ** 2,
+                        ct_approach ** 1.5
+                    ]])
+                    # sysef manipulation
+                    sysef = np.log10(sysef) / 3
+                    temp_2.append(np.round(sysef, 3))
+
                 st.session_state.ch_sysef_2_ch[np.round(lift, 1)] = temp_2
 
                 st.session_state.lifts.append(np.round(lift,1))
