@@ -41,7 +41,7 @@ graph_color = ["red", "red", "blue", "red", "blue", "green"]
 cooling_load = st.slider("Cooling Load", min_value=300, max_value=450)
 lift = st.slider("Lift", min_value=18.0, max_value=30.0, step=0.1)
 h_cwst = st.slider("CWST", min_value=28.0, max_value=32.0, step=0.1)
-ct_approach = st.slider("CT Approach", min_value=1.0, max_value=3.0, step=0.1)
+ct_approach = st.slider("CT Approach", min_value=1.0, max_value=5.0, step=0.1)
 
 p1 = figure(
     title='Chiller System Efficiency vs Cooling Tower Power Input On 1 Chiller Configuration',
