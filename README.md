@@ -23,7 +23,7 @@ Further broken down into various weather categories:
 - rainy: DB<28C & RH>85%
 - cool: DB<28C
 
-##3 Streamlit UI 
+### Streamlit UI 
 UI is currently developed using streamlit package.
 
 To run:
