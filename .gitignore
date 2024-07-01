@@ -1,4 +1,3 @@
-/parklane/.gitattributes
 /parklane/ensemble_models/mlruns
 /parklane/ensemble_models/logs.log
 /parklane/ensemble_models/catboost_info
