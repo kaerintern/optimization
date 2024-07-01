@@ -1,18 +1,20 @@
 ## Optimization
 Exploring methods and various features to improve overall eficiency of System Efficiency, starting by looking at Chiller Effficiency on its own.
 
-### First Iteration
+### First Iteration (No longer used)
 Uses [lift, ct_tot_kw, cooling_load] as its features.
 
-### Second Iteration
+### Second Iteration (No longer used)
 uses [lift, ct_tot_kw, cooling_load, ch_1_kwe, ch_2_kwe] as its features.
 
-### Third Iteration
+### Third Iteration (Completed)
 Uses [lift, ct_tot_kw, cooling_load, chiller_configuration, cwst, ct_approach] as its features
 accompanied by feature manipulation in both features and target variables.
 
+Model: RF_h_cwst_ct_approach.sav
 
-## Streamlit UI
+
+## Streamlit UI (In Progress)
 UI is currently developed using streamlit package.
 
 To run:
