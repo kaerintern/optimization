@@ -13,8 +13,17 @@ accompanied by feature manipulation in both features and target variables.
 
 Model: RF_h_cwst_ct_approach.sav
 
+### Fourth Iteration (In Progress)
+Uses [lift, ct_tot_kw, cooling_load, chiller_configuration, cwst, ct_approach] as its features
+accompanied by feature manipulation in both features and target variables.
 
-## Streamlit UI (In Progress)
+Further broken down into various weather categories:
+- hot: DB>30C
+- general: 28C<DB<30C
+- rainy: DB<28C & RH>85%
+- cool: DB<28C
+
+##3 Streamlit UI 
 UI is currently developed using streamlit package.
 
 To run:
