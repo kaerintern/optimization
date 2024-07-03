@@ -53,7 +53,7 @@ graph_color = ["red", "red", "blue", "red", "blue", "green"]
 cooling_load = st.number_input("Cooling Load", min_value=300, max_value=450)
 lift = st.number_input("Lift", min_value=18.0, max_value=30.0, step=0.1)
 h_cwst = st.number_input("CWST", min_value=28.0, max_value=32.0, step=0.1)
-ct_approach = st.number_input("CT Approach", min_value=1.0, max_value=5.0, step=0.1)
+ct_approach = st.number_input("CT Approach", min_value=0.1, max_value=5.0, step=0.1)
 
 
 
