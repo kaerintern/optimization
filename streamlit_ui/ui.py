@@ -114,7 +114,7 @@ with c1:
                 # 1 chiller
                 temp_1 = []
                 ch_run = 0
-                for i in range(20, 201):
+                for i in range(40, 201):
                     ct_tot_kw.append(i/10)
                     # cooling tower manipulation
                     sysef = model.predict([[
@@ -134,7 +134,7 @@ with c1:
                 # 2 chiller
                 temp_2 = []
                 ch_run = 1
-                for i in range(20, 201):
+                for i in range(40, 201):
                     sysef = model.predict([[
                         lift ** 3,
                         cooling_load,
