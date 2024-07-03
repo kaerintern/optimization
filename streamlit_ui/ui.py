@@ -30,18 +30,32 @@ def check_password():
 if not check_password():
     st.stop()  # Do not continue if check_password is not True.
 
-relative_path = os.path.join(os.path.dirname(__file__), '..', 'parklane', 'currently_used', 'RF_h_cwst_ct_approach.sav')
+model_path = 'RF_general.sav'
+
+weather = st.multiselect(
+    "Select weather category",
+    ['Summer', 'Rainy', 'General']
+)
+print(weather)
+# weather selection
+model_path = 'RF_summer.sav' if 'Summer' in weather else 'RF_general.sav'
+model_path = 'RF_rain.sav' if 'Rain' in weather else 'RF_general.sav'
+
+relative_path = os.path.join(os.path.dirname(__file__), '..', 'parklane', 'model', 'third_iteration', 'RF_h_cwst_ct_approach.sav')
 
 with open(relative_path, 'rb') as file:
+    print(relative_path)
     model = pickle.load(file)
 
 graph_color = ["red", "red", "blue", "red", "blue", "green"]
 
 
-cooling_load = st.slider("Cooling Load", min_value=300, max_value=450)
-lift = st.slider("Lift", min_value=18.0, max_value=30.0, step=0.1)
-h_cwst = st.slider("CWST", min_value=28.0, max_value=32.0, step=0.1)
-ct_approach = st.slider("CT Approach", min_value=1.0, max_value=5.0, step=0.1)
+cooling_load = st.number_input("Cooling Load", min_value=300, max_value=450)
+lift = st.number_input("Lift", min_value=18.0, max_value=30.0, step=0.1)
+h_cwst = st.number_input("CWST", min_value=28.0, max_value=32.0, step=0.1)
+ct_approach = st.number_input("CT Approach", min_value=1.0, max_value=5.0, step=0.1)
+
+
 
 p1 = figure(
     title='Chiller System Efficiency vs Cooling Tower Power Input On 1 Chiller Configuration',
@@ -100,7 +114,7 @@ with c1:
                 # 1 chiller
                 temp_1 = []
                 ch_run = 0
-                for i in range(20, 301):
+                for i in range(20, 201):
                     ct_tot_kw.append(i/10)
                     # cooling tower manipulation
                     sysef = model.predict([[
@@ -120,7 +134,7 @@ with c1:
                 # 2 chiller
                 temp_2 = []
                 ch_run = 1
-                for i in range(20, 301):
+                for i in range(20, 201):
                     sysef = model.predict([[
                         lift ** 3,
                         cooling_load,
