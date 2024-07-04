@@ -1,13 +1,25 @@
-import hmac
-import os
-import pickle
-import warnings
 from bokeh.plotting import figure
+from dotenv import load_dotenv, dotenv_values
+import hmac
 import numpy as np
+import os
+import pandas as pd
+import pickle
 import streamlit as st
+import warnings
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
+load_dotenv()
 
+model = os.environ['model_name']
+relative_path = os.path.join(os.path.dirname(__file__), '..', 'parklane', 'model', model)
+
+with open(relative_path, 'rb') as file:
+    model = pickle.load(file)
+
+graph_color = ["red", "red", "blue", "red", "blue", "green"]
+
+# Password Logic
 def check_password():
 
     def password_entered():
@@ -30,62 +42,65 @@ def check_password():
 if not check_password():
     st.stop()  # Do not continue if check_password is not True.
 
-model_path = 'RF_general.sav'
-
-weather = st.multiselect(
-    "Select weather category",
-    ['Summer', 'Rainy', 'General']
-)
-print(weather)
-# weather selection
-model_path = 'RF_summer.sav' if 'Summer' in weather else 'RF_general.sav'
-model_path = 'RF_rain.sav' if 'Rain' in weather else 'RF_general.sav'
-
-relative_path = os.path.join(os.path.dirname(__file__), '..', 'parklane', 'model', 'third_iteration', 'RF_h_cwst_ct_approach.sav')
-
-with open(relative_path, 'rb') as file:
-    print(relative_path)
-    model = pickle.load(file)
-
-graph_color = ["red", "red", "blue", "red", "blue", "green"]
-
-
-cooling_load = st.number_input("Cooling Load", min_value=300, max_value=450)
-lift = st.number_input("Lift", min_value=18.0, max_value=30.0, step=0.1)
-h_cwst = st.number_input("CWST", min_value=28.0, max_value=32.0, step=0.1)
-ct_approach = st.number_input("CT Approach", min_value=0.1, max_value=5.0, step=0.1)
-
-
-
-p1 = figure(
-    title='Chiller System Efficiency vs Cooling Tower Power Input On 1 Chiller Configuration',
-    x_axis_label='Cooling Tower Power Input',
-    y_axis_label='Chiller System Efficiency',
-)
-p1.plot_height=400
-p1.plot_width=1000
-
-p2 = figure(
-    title='Chiller System Efficiency vs Cooling Tower Power Input On 2 Chiller Configuration',
-    x_axis_label='Cooling Tower Power Input',
-    y_axis_label='Chiller System Efficiency'
-)
-p2.plot_height=400
-p2.plot_width=1000
-
+# Functions Logic
 def plot(p, ct_tot_kw, sysef, lift, color, line_width=2):
+    '''
+    Plot graph
+    
+    Args:
+        p = plot
+        ct_tot_kw = total cooling tower
+        sysef = system efficiency
+        lift = lift
+        color = colot
+    Returns:
+        plotted line'''
     p.line(ct_tot_kw, sysef, legend_label=str(lift),color=color, line_width=line_width)
 
 
 def reset():
+    '''
+    Reset system, making stored variables empty
+    '''
     st.session_state['ch_sysef_1_ch'] = {}
     st.session_state['ch_sysef_2_ch'] = {}
     st.session_state['counter_1'] = 0
     st.session_state['counter_2'] = 0
     st.session_state['lifts'] = []
 
+# UI Logic
+col1, col2 = st.columns(2)
+
+with col1:
+    cooling_load = st.number_input("Cooling Load", min_value=300, max_value=450)
+    lift = st.number_input("Lift", min_value=18.0, max_value=30.0, step=0.1)
+    create = st.button("Create")
+
+with col2:
+    h_cwst = st.number_input("CWST", min_value=28.0, max_value=32.0, step=0.1)
+    ct_approach = st.number_input("CT Approach", min_value=0.1, max_value=5.0, step=0.1)
+    reset_button = st.button("Reset")
+
+p1 = figure(
+    title='System Efficiency vs Cooling Tower Power Input On 1 Chiller Configuration',
+    x_axis_label='Cooling Tower Power Input',
+    y_axis_label='System Efficiency',
+)
+p1.plot_height=400
+p1.plot_width=1000
+
+p2 = figure(
+    title=' System Efficiency vs Cooling Tower Power Input On 2 Chiller Configuration',
+    x_axis_label='Cooling Tower Power Input',
+    y_axis_label='System Efficiency'
+)
+p2.plot_height=400
+p2.plot_width=1000
+
+
+
 if 'ch_sysef_1_ch' not in st.session_state:
-    st.session_state['ch_sysef_1_ch'] = {}
+    st.session_state['ch_sysef_1_ch'] = {} 
 
 if 'ch_sysef_2_ch' not in st.session_state:
     st.session_state['ch_sysef_2_ch'] = {}
@@ -99,86 +114,79 @@ if 'counter_2' not in st.session_state:
 if 'lifts' not in st.session_state:
     st.session_state['lifts'] = []
 
+if reset_button:
+    reset()
 
 
 ct_tot_kw = []
-c1, c2, c3, c4, c5, c6 = st.columns(6)
-with c1:
-    create = st.button("Create")
 
-    if create and st.session_state.counter_1 <9:
-        try:
-            # check if the input lift has already been calculated
-            if lift not in st.session_state.lifts:
-                
-                # 1 chiller
-                temp_1 = []
-                ch_run = 0
-                for i in range(40, 201):
-                    ct_tot_kw.append(i/10)
-                    # cooling tower manipulation
-                    sysef = model.predict([[
-                        lift ** 3,
-                        cooling_load,
-                        (i/10) ** 1.5,
-                        ch_run, 
-                        h_cwst ** 2,
-                        ct_approach ** 1.5
-                    ]])
-                    # sysef manipulation
-                    sysef = np.log10(sysef) / 3
-                    temp_1.append(np.round(sysef, 3))
-            
-                st.session_state.ch_sysef_1_ch[np.round(lift, 1)] = temp_1
+# Calculation Logic
+if create and st.session_state.counter_1 <9:
+    try:
+        # check if the input lift has already been calculated
+        if lift not in st.session_state.lifts:
+            # variable manipulation
+            vars = pd.DataFrame({
+                'lift': lift**3,
+                'sys_cl': cooling_load,
+                'ct_tot_kw': 1, # dummy will be change again
+                'ch_run': 0,
+                'h_cwst': h_cwst**2,
+                'ct_approach': ct_approach*1.5
+            }, index=[0])
 
-                # 2 chiller
-                temp_2 = []
-                ch_run = 1
-                for i in range(40, 201):
-                    sysef = model.predict([[
-                        lift ** 3,
-                        cooling_load,
-                        (i/10) ** 1.5,
-                        ch_run, 
-                        h_cwst ** 2,
-                        ct_approach ** 1.5
-                    ]])
-                    # sysef manipulation
-                    sysef = np.log10(sysef) / 3
-                    temp_2.append(np.round(sysef, 3))
+            # 1 chiller
+            temp_1 = []
+            for i in range(40, 201):
+                ct_tot_kw.append(i/10)
+                # cooling tower manipulation
+                vars['ct_tot_kw'] = (i/10)**1.5
+                sysef = model.predict(vars)
+                # sysef manipulation
+                sysef = np.log10(sysef) / 3
+                temp_1.append(np.round(sysef, 3))
+        
+            st.session_state.ch_sysef_1_ch[np.round(lift, 1)] = temp_1
 
-                st.session_state.ch_sysef_2_ch[np.round(lift, 1)] = temp_2
+            # 2 chiller
+            temp_2 = []
+            ch_run = 1
+            for i in range(40, 201):
+                # ch run configuration
+                vars['ch_run'] = 1
+                # cooling tower manipulation
+                vars['ct_tot_kw'] = (i/10)**1.5
+                sysef = model.predict(vars)
+                # sysef manipulation
+                sysef = np.log10(sysef) / 3
+                temp_2.append(np.round(sysef, 3))
 
-                st.session_state.lifts.append(np.round(lift,1))
-        except IndexError:
-            st.write('System Error')
-            st.session_state.counter_1 = 0
+            st.session_state.ch_sysef_2_ch[np.round(lift, 1)] = temp_2
 
-    elif create and st.session_state.counter_1 >=10:
-        st.write('Error')
-        reset()
+            st.session_state.lifts.append(np.round(lift,1))
+    except IndexError:
+        st.write('System Error')
+        st.session_state.counter_1 = 0
 
-with c3:
-    reset_button = st.button("Reset")
-    if reset_button:
-        reset()
+elif create and st.session_state.counter_1 >=10:
+    st.write('Error')
+    reset()
 
+# Plotting Logic
 if create:
     for sysef in st.session_state.ch_sysef_1_ch.values():
         try:
             plot(p=p1, ct_tot_kw=ct_tot_kw, sysef=sysef, color=graph_color[st.session_state.counter_1], lift=lift)
             st.session_state.counter_1+=1
-        except IndexError:
-            st.write('Error')
-            reset()
+        except:
+            pass
 
     for sysef in st.session_state.ch_sysef_2_ch.values():
         try:
             plot(p=p2, ct_tot_kw=ct_tot_kw, sysef=sysef, color=graph_color[st.session_state.counter_2], lift=lift)
             st.session_state.counter_2+=1
-        except IndexError:
-            st.write('Error')
-            reset()
+        except:
+            pass
 
 st.bokeh_chart(p1, use_container_width=True)
 st.bokeh_chart(p2, use_container_width=True)
