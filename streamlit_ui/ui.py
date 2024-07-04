@@ -9,11 +9,14 @@ import streamlit as st
 
 load_dotenv()
 
-model = os.environ['model_name']
-relative_path = os.path.join(os.path.dirname(__file__), '..', 'parklane', 'model', model)
+@st.cache_resource
+def load_model():
+    relative_path = os.path.join(os.path.dirname(__file__), '..', 'parklane', 'model', os.environ['model_name'])
 
-with open(relative_path, 'rb') as file:
-    model = pickle.load(file)
+    with open(relative_path, 'rb') as file:
+        model = pickle.load(file)
+    
+    return model
 
 graph_color = ["red", "red", "blue", "red", "blue", "green"]
 
@@ -121,6 +124,7 @@ ct_tot_kw = []
 # Calculation Logic
 if create and st.session_state.counter_1 <9:
     try:
+        model = load_model()
         # check if the input lift has already been calculated
         if lift not in st.session_state.lifts:
             # variable manipulation
