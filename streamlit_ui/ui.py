@@ -6,9 +6,7 @@ import os
 import pandas as pd
 import pickle
 import streamlit as st
-import warnings
 
-warnings.filterwarnings("ignore", category=DeprecationWarning)
 load_dotenv()
 
 model = os.environ['model_name']
