@@ -2,3 +2,6 @@
 /parklane/ensemble_models/logs.log
 /parklane/ensemble_models/catboost_info
 /parklane/logs.log
+/parklane/model/RF_general.sav
+/parklane/model/RF_rain.sav
+/parklane/model/RF_summer.sav
