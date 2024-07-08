@@ -10,8 +10,6 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-
-
 load_dotenv()
 
 @st.cache_resource
@@ -83,7 +81,7 @@ with col1:
     create = st.button("Create")
 
 with col2:
-    h_cwst = st.number_input("CWST", min_value=28.0, max_value=32.0, step=0.1)
+    h_cwst = st.number_input("CWST", min_value=26.0, max_value=32.0, step=0.1)
     ct_approach = st.number_input("CT Approach", min_value=0.1, max_value=5.0, step=0.1)
     reset_button = st.button("Reset")
 
