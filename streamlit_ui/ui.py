@@ -76,13 +76,11 @@ def reset():
 col1, col2 = st.columns(2)
 
 with col1:
-    cooling_load = st.number_input("Cooling Load", min_value=300, max_value=450)
     lift = st.number_input("Lift", min_value=18.0, max_value=30.0, step=0.1)
     create = st.button("Create")
 
 with col2:
-    h_cwst = st.number_input("CWST", min_value=26.0, max_value=32.0, step=0.1)
-    ct_approach = st.number_input("CT Approach", min_value=0.1, max_value=5.0, step=0.1)
+    h_cwrt = st.number_input("CWST", min_value=26.0, max_value=32.0, step=0.1)
     reset_button = st.button("Reset")
 
 p1 = figure(
@@ -133,11 +131,9 @@ if create and st.session_state.counter_1 <9:
             # variable manipulation
             vars = pd.DataFrame({
                 'lift': lift**3,
-                'sys_cl': cooling_load,
                 'ct_tot_kw': 1, # dummy will be change again
                 'ch_run': 0,
-                'h_cwst': h_cwst**2,
-                'ct_approach': ct_approach*1.5
+                'h_cwrt': h_cwrt**2
             }, index=[0])
 
             # 1 chiller
