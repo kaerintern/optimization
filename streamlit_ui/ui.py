@@ -78,11 +78,12 @@ col1, col2 = st.columns(2)
 with col1:
     cooling_load = st.number_input("Cooling Load", min_value=250, max_value=450)
     lift = st.number_input("Lift", min_value=18.0, max_value=30.0, step=0.1)
+    h_cwrt = st.number_input("CWRT", min_value=25.0, max_value=35.0, step=0.1)
     create = st.button("Create")
 
 with col2:
     h_cwst = st.number_input("CWST", min_value=26.0, max_value=32.0, step=0.1)
-    ct_approach = st.number_input("CT Approach", min_value=0.1, max_value=4.0)
+    wb = st.number_input("WB", min_value=24.0, max_value=28.0, step=0.1)
     reset_button = st.button("Reset")
 
 p1 = figure(
@@ -132,38 +133,38 @@ if create and st.session_state.counter_1 <9:
         if lift not in st.session_state.lifts:
             # variable manipulation
             vars = pd.DataFrame({
-                'lift': lift**3,
-                'sys_cl': cooling_load,
+                'h_cwst': h_cwst ** 0.9,
+                'h_cwrt': h_cwrt ** 0.9,
                 'ct_tot_kw': 1, # dummy will be change again
-                'ch_run': 0,
-                'h_cwst': h_cwst**2,
-                'ct_approach': ct_approach
+                'lift': lift ** 3,
+                'sys_cl': cooling_load,
+                'wea_ct_wb': wb ** 0.7,
+                'ch_run': 0 # dummy
             }, index=[0])
 
             # 1 chiller
             temp_1 = []
-            for i in range(40, 201):
-                ct_tot_kw.append(i/10)
+            for ct in range(40, 201):
+                ct_tot_kw.append(ct/10)
+                # ch run configuration
+                vars['ch_run'] = 0
                 # cooling tower manipulation
-                vars['ct_tot_kw'] = (i/10)**1.5
-                sysef = model.predict(vars)
+                vars['ct_tot_kw'] = (ct/10)**1.5
                 # sysef manipulation
-                sysef = np.log10(sysef) / 3
+                sysef = np.log10(model.predict(vars))/3
                 temp_1.append(np.round(sysef, 3))
         
             st.session_state.ch_sysef_1_ch[np.round(lift, 1)] = temp_1
 
             # 2 chiller
             temp_2 = []
-            ch_run = 1
-            for i in range(40, 201):
+            for ct in range(40, 201):
                 # ch run configuration
                 vars['ch_run'] = 1
                 # cooling tower manipulation
-                vars['ct_tot_kw'] = (i/10)**1.5
-                sysef = model.predict(vars)
+                vars['ct_tot_kw'] = (ct/10)**1.5
                 # sysef manipulation
-                sysef = np.log10(sysef) / 3
+                sysef = np.log10(model.predict(vars)) / 3
                 temp_2.append(np.round(sysef, 3))
 
             st.session_state.ch_sysef_2_ch[np.round(lift, 1)] = temp_2
