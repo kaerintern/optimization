@@ -138,13 +138,13 @@ if create and st.session_state.counter_1 <9:
             weekday = eval(os.environ['weekday_dict'].replace('"', ''))[day]
             # variable manipulation
             vars = pd.DataFrame({
+                'ch_run': 0, # dummy
                 'h_cwst': h_cwst ** 0.9,
                 'h_cwrt': h_cwrt ** 0.9,
                 'ct_tot_kw': 1, # dummy will be change again
                 'lift': lift ** 3,
                 'sys_cl': cooling_load,
                 'wea_ct_wb': wb ** 0.7,
-                'ch_run': 0, # dummy
                 'ct_approach': ct_approach,
                 'time': time,
                 'weekend': weekday
