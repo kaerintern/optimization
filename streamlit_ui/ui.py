@@ -14,7 +14,7 @@ load_dotenv()
 
 @st.cache_resource
 def load_model():
-    relative_path = os.path.join(os.path.dirname(__file__), '..', 'parklane', 'model', os.environ['model_name'])
+    relative_path = os.path.join(os.path.dirname(__file__), '..', 'parklane', 'model', os.environ['model_path'])
 
     with open(relative_path, 'rb') as file:
         model = pickle.load(file)
