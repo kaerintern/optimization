@@ -79,11 +79,14 @@ with col1:
     cooling_load = st.number_input("Cooling Load", min_value=250, max_value=450)
     lift = st.number_input("Lift", min_value=18.0, max_value=30.0, step=0.1)
     h_cwrt = st.number_input("CWRT", min_value=25.0, max_value=35.0, step=0.1)
+    day = st.selectbox('weekday', ('weekday', 'weekend'))
     create = st.button("Create")
 
 with col2:
     h_cwst = st.number_input("CWST", min_value=26.0, max_value=32.0, step=0.1)
     wb = st.number_input("WB", min_value=24.0, max_value=28.0, step=0.1)
+    time = st.selectbox('Time of Day', ('morning', 'afternoon', 'evening'))
+    ct_approach = st.number_input("CT Approach", min_value=0.1, max_value=4.0, step=0.1)
     reset_button = st.button("Reset")
 
 p1 = figure(
@@ -131,6 +134,8 @@ if create and st.session_state.counter_1 <9:
         model = load_model()
         # check if the input lift has already been calculated
         if lift not in st.session_state.lifts:
+            time = eval(os.environ['time_dict'].replace('"', ''))[time]
+            weekday = eval(os.environ['weekday_dict'].replace('"', ''))[day]
             # variable manipulation
             vars = pd.DataFrame({
                 'h_cwst': h_cwst ** 0.9,
@@ -139,7 +144,10 @@ if create and st.session_state.counter_1 <9:
                 'lift': lift ** 3,
                 'sys_cl': cooling_load,
                 'wea_ct_wb': wb ** 0.7,
-                'ch_run': 0 # dummy
+                'ch_run': 0, # dummy
+                'ct_approach': ct_approach,
+                'time': time,
+                'weekend': weekday
             }, index=[0])
 
             # 1 chiller
