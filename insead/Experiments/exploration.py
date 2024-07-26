@@ -8,10 +8,7 @@ load_dotenv()
 #%%
 df = pd.read_csv(os.environ['mac_insead_path'])
 print('Unfiltered row of dataframe is {}'.format(len(df)))
-#%%
-df.columns
-#%%
-df.ch1kw.describe()
+
 #%%
 # filtering
 df = df[(df['effsys']>0.45) & (df['effsys']<0.65)]
