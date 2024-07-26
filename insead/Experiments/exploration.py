@@ -1,8 +1,12 @@
 #%%
 from load_dotenv import load_dotenv
+import numpy as np
 import os
 import pandas as pd
 import seaborn as sns
+from scipy import stats
+from sklearn.feature_selection import r_regression
+
 
 load_dotenv()
 #%%
@@ -14,8 +18,9 @@ print('Unfiltered row of dataframe is {}'.format(len(df)))
 df = df[(df['effsys']>0.45) & (df['effsys']<0.65)]
 df = df[(df['ct1kw']> 2) & (df['ct1kw']<14)]
 df = df[(df['ct2akw']> 2) & (df['ct2akw']<14)]
-df = df[(df['loadsys']>200) & (df['loadsys']<450)]
-df = df[(df['cwrhdr']>31) & (df['cwrhdr']<33.5)]
+df = df[(df['loadsys']>150) & (df['loadsys']<450)]
+df = df[(df['cwrhdr']>29) & (df['cwrhdr']<33.5)]
+df = df[(df['cwshdr']>27) & (df['cwshdr']<30)]
 df['timestamp'] = pd.to_datetime(df['timestamp'], errors='coerce')
 
 # average (3)chiller power input
@@ -47,6 +52,9 @@ def time_dec(x):
 df['time'] = pd.to_datetime(df['timestamp']).dt.hour
 df['time'] = df['time'].apply(time_dec)
 
+df = df[['effsys', 'ct_tot_kw', 'chavgkw', 'loadsys', 'lift', 'weekend', 'time', 'cwrhdr', 'cwshdr']]
+df = df.drop_duplicates().reset_index()
+
 print('Filtered row of dataframe is {}'.format(len(df)))
 
 # %%
@@ -58,4 +66,29 @@ sns.displot(df, x='lift')
 sns.displot(df, x='weekend')
 sns.displot(df, x='time')
 sns.displot(df, x='cwrhdr')
+sns.displot(df, x='cwshdr')
 # %%
+sys_feats = ['effsys', 'ct_tot_kw', 'loadsys', 'lift', 'weekend', 'time', 'cwrhdr', 'cwshdr']
+sys_df  = df[sys_feats]
+
+X = sys_df.drop(columns=['effsys'])
+y = sys_df['effsys']
+corr_values = r_regression(X,y)
+
+table_df = pd.DataFrame(
+    data=corr_values.reshape(1, -1),
+    columns=X.columns)
+table_df
+# %%
+# spearmans correlation
+res_corr = []
+for feat in sys_feats:
+    res = stats.spearmanr(sys_df[feat], y)
+    res_corr.append(res.statistic)
+
+res_corr = np.array(res_corr)
+table_df = pd.DataFrame(
+    data=res_corr.reshape(1, -1),
+    columns=sys_feats
+)
+table_df
