@@ -1,5 +1,5 @@
 #%%
-from load_dotenv import load_dotenv
+from dotenv import load_dotenv
 import numpy as np
 import os
 import pandas as pd
@@ -68,7 +68,7 @@ sns.displot(df, x='time')
 sns.displot(df, x='cwrhdr')
 sns.displot(df, x='cwshdr')
 # %%
-# pearsons correlations
+# pearsons correlat6778ions
 sys_feats = ['effsys', 'ct_tot_kw', 'loadsys', 'lift', 'weekend', 'time', 'cwrhdr', 'cwshdr']
 sys_df  = df[sys_feats]
 

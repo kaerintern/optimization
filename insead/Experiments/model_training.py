@@ -1,5 +1,5 @@
 #%%
-from load_dotenv import load_dotenv
+from dotenv import load_dotenv
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -123,7 +123,7 @@ grid_search = GridSearchCV(
 grid_search.fit(X_train, y_train)
 
 ## save model
-filename = 'RF_parklane_min_wb.pkl'
+filename = 'RF_insead_no_wb.pkl'
 pickle.dump(grid_search, open(filename, 'wb'))
 
 # %%
