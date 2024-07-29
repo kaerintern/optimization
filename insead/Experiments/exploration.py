@@ -68,6 +68,7 @@ sns.displot(df, x='time')
 sns.displot(df, x='cwrhdr')
 sns.displot(df, x='cwshdr')
 # %%
+# pearsons correlations
 sys_feats = ['effsys', 'ct_tot_kw', 'loadsys', 'lift', 'weekend', 'time', 'cwrhdr', 'cwshdr']
 sys_df  = df[sys_feats]
 
