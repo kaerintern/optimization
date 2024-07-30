@@ -17,7 +17,7 @@ import warnings
 load_dotenv()
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 #%%
-df = pd.read_csv(os.environ['mac_insead_path'])
+df = pd.read_csv(os.environ['win_insead_path'])
 print('Unfiltered row of dataframe is {}'.format(len(df)))
 
 #%%
