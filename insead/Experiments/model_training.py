@@ -34,6 +34,10 @@ df['timestamp'] = pd.to_datetime(df['timestamp'], errors='coerce')
 df['chavgkw'] = (df['ch1kw']+df['ch2kw']+df['ch3kw'])/3
 df = df[(df['chavgkw']>20)& (df['chavgkw']<80)]
 
+# chiller configuration
+df['ch_run'] = (df['ch1kw']>=40) & (df['ch2kw']>=40)
+df['ch_run'] = df['ch_run'].astype(int)
+
 # cooling tower total
 df['ct_tot_kw'] = df['ct1kw'] + df['ct2akw']
 
@@ -59,7 +63,7 @@ def time_dec(x):
 df['time'] = pd.to_datetime(df['timestamp']).dt.hour
 df['time'] = df['time'].apply(time_dec)
 
-df = df[['effsys', 'ct_tot_kw', 'loadsys', 'lift', 'weekend', 'time', 'cwrhdr', 'cwshdr']]
+df = df[['effsys', 'ct_tot_kw', 'ch_run', 'loadsys', 'lift', 'weekend', 'time', 'cwrhdr', 'cwshdr']]
 df = df.drop_duplicates().dropna().reset_index()
 
 print('Filtered row of dataframe is {}'.format(len(df)))
