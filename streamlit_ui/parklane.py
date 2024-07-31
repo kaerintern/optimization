@@ -1,5 +1,5 @@
 from bokeh.plotting import figure
-from dotenv import load_dotenv, dotenv_values
+from dotenv import load_dotenv
 import hmac
 import numpy as np
 import os
@@ -12,16 +12,16 @@ warnings.filterwarnings("ignore")
 
 load_dotenv()
 
+st.title("Parklane")
+
 @st.cache_resource
 def load_model():
-    relative_path = os.path.join(os.path.dirname(__file__), '..', 'parklane', 'model', os.environ['model_path'])
-
+    relative_path = os.path.join(os.path.dirname(__file__), '..', 'parklane', 'model', os.environ['parklane_model_path'])
+ 
     with open(relative_path, 'rb') as file:
         model = pickle.load(file)
     
     return model
-
-graph_color = ["red", "red", "blue", "red", "blue", "green"]
 
 # Password Logic
 def check_password():
@@ -190,14 +190,14 @@ elif create and st.session_state.counter_1 >=10:
 if create:
     for sysef in st.session_state.ch_sysef_1_ch.values():
         try:
-            plot(p=p1, ct_tot_kw=ct_tot_kw, sysef=sysef, color=graph_color[st.session_state.counter_1], lift=lift)
+            plot(p=p1, ct_tot_kw=ct_tot_kw, sysef=sysef, color=eval(os.environ['graph_color'].replace('"', ''))[st.session_state.counter_1], lift=lift)
             st.session_state.counter_1+=1
         except:
             pass
 
     for sysef in st.session_state.ch_sysef_2_ch.values():
         try:
-            plot(p=p2, ct_tot_kw=ct_tot_kw, sysef=sysef, color=graph_color[st.session_state.counter_2], lift=lift)
+            plot(p=p2, ct_tot_kw=ct_tot_kw, sysef=sysef, color=eval(os.environ['graph_color'].replace('"', ''))[st.session_state.counter_2], lift=lift)
             st.session_state.counter_2+=1
         except:
             pass
