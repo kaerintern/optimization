@@ -10,9 +10,8 @@ from sklearn.feature_selection import r_regression
 
 load_dotenv()
 #%%
-df = pd.read_csv(os.environ['mac_insead_path'])
+df = pd.read_csv(os.environ['win_insead_path'])
 print('Unfiltered row of dataframe is {}'.format(len(df)))
-
 #%%
 # filtering
 df = df[(df['effsys']>0.45) & (df['effsys']<0.65)]
@@ -26,6 +25,10 @@ df['timestamp'] = pd.to_datetime(df['timestamp'], errors='coerce')
 # average (3)chiller power input
 df['chavgkw'] = (df['ch1kw']+df['ch2kw']+df['ch3kw'])/3
 df = df[(df['chavgkw']>20)& (df['chavgkw']<80)]
+
+# chiller configuration
+df['ch_run'] = (df['ch1kw']>=40) & (df['ch2kw']>=40)
+df['ch_run'] = df['ch_run'].astype(int)
 
 # cooling tower total
 df['ct_tot_kw'] = df['ct1kw'] + df['ct2akw']
