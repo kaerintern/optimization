@@ -59,7 +59,7 @@ def time_dec(x):
 df['time'] = pd.to_datetime(df['timestamp']).dt.hour
 df['time'] = df['time'].apply(time_dec)
 
-df = df[['effsys', 'ct_tot_kw', 'chavgkw', 'loadsys', 'lift', 'weekend', 'time', 'cwrhdr', 'cwshdr']]
+df = df[['effsys', 'ct_tot_kw', 'loadsys', 'lift', 'weekend', 'time', 'cwrhdr', 'cwshdr']]
 df = df.drop_duplicates().dropna().reset_index()
 
 print('Filtered row of dataframe is {}'.format(len(df)))
@@ -73,7 +73,6 @@ df['lift'] = df['lift'] ** np.int32(os.environ['lift_const'])
 # %%
 sns.displot(df, x='effsys')
 sns.displot(df, x='ct_tot_kw')
-sns.displot(df, x='chavgkw')
 sns.displot(df, x='loadsys')
 sns.displot(df, x='lift')
 sns.displot(df, x='weekend')
@@ -125,5 +124,24 @@ grid_search.fit(X_train, y_train)
 ## save model
 filename = 'RF_insead_no_wb.pkl'
 pickle.dump(grid_search, open(filename, 'wb'))
-
+#%%
+model = pickle.load(open(r'C:\Users\fabian\Desktop\optimization_github\optimization\insead\model\RF_insead_no_wb.pkl', 'rb'))
+model.best_params_
 # %%
+rf = RandomForestRegressor(
+    n_estimators=500,
+    max_depth=100,
+    min_samples_leaf=10,
+    min_samples_split=10,
+    random_state=10
+    ) # hyperparameter values observed best to avoid both overfitting and underfitting
+
+X = df.drop(['effsys', 'index'], axis=1)
+y = df[['effsys']]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42, test_size=0.2)
+y.transpose()
+
+rf.fit(X_train, y_train)
+
+pickle.dump(rf, open('RF_insead_no_wb.pkl', 'wb'))
