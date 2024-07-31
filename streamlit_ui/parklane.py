@@ -76,7 +76,7 @@ def reset():
 col1, col2 = st.columns(2)
 
 with col1:
-    cooling_load = st.number_input("Cooling Load", min_value=250, max_value=450)
+    cooling_load = st.number_input("Cooling Load", min_value=250, max_value=600)
     lift = st.number_input("Lift", min_value=18.0, max_value=30.0, step=0.1)
     h_cwrt = st.number_input("CWRT", min_value=25.0, max_value=35.0, step=0.1)
     day = st.selectbox('weekday', ('weekday', 'weekend'))
