@@ -14,8 +14,13 @@ load_dotenv()
 
 st.title("Parklane")
 
+# Loading Model
 @st.cache_resource
 def load_model():
+    '''
+    Loads model while being stored on cache to not exceed
+    Streamlit's memory limit
+    '''
     relative_path = os.path.join(os.path.dirname(__file__), '..', 'parklane', 'model', os.environ['parklane_model_path'])
  
     with open(relative_path, 'rb') as file:

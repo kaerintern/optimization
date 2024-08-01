@@ -14,8 +14,13 @@ load_dotenv()
 
 st.title("Insead")
 
+# Loading Model
 @st.cache_resource
 def load_model():
+    '''
+    Loads model while being stored on cache to not exceed
+    Streamlit's memory limit
+    '''
     relative_path = os.path.join(os.path.dirname(__file__), '..', 'insead', 'model', os.environ['insead_model_path'])
 
     with open(relative_path, 'rb') as file:
